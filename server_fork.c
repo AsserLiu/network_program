@@ -8,6 +8,7 @@
 #include<string.h>
 #include<netinet/in.h>
 #include<signal.h>
+#include<errno.h>
 
 int main()
 {
@@ -21,8 +22,16 @@ int main()
 	server.sin_family = AF_INET;
 	server.sin_addr.s_addr = htonl(INADDR_ANY);
 	server.sin_port = htons(8888);
-	bind(sockfd,(struct sockaddr *)&server,sizeof(server));
-	listen(sockfd,5);
+	int x = bind(sockfd,(struct sockaddr *)&server,sizeof(server));
+	if(x == -1){
+		perror("bind");
+		exit(3);
+	}
+	x = listen(sockfd,5);
+	if(x == -1){
+		perror("listen");
+		exit(3);
+	}
 	signal(SIGCLD, SIG_IGN);
 
 	int size = sizeof(struct sockaddr_in);
